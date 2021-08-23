@@ -1,31 +1,57 @@
 package mergo_test
 
 import (
-	"github.com/imdario/mergo"
+	"fmt"
+	"github.com/zhangyangjing/mergo"
 	"testing"
 )
 
-type data struct {
-	B *bool
-	I *int
-	S *string
+type CommonAppConfig struct {
+	Backup *bool
+}
+
+type BackupConfig struct {
+	DataRetentionMaxDays *uint32
+}
+
+type Config struct {
+	Drive    *CommonAppConfig
+	Mail     *CommonAppConfig
+	Calendar *CommonAppConfig
+	Contacts *CommonAppConfig
+	Site     *CommonAppConfig
+	Backup   *BackupConfig
 }
 
 func TestIssueZyj(t *testing.T) {
-	vb := true
-	vi := 12
-	vs := "34"
+	T := true
+	F := false
 
-	vi2 := 324
+	days := uint32(365)
+	days2 := uint32(3)
 
-	d1 := data{
-		B: &vb,
-		I: &vi,
+	d1 := Config{
+		Drive: &CommonAppConfig{
+			Backup: &T,
+		},
+		Mail: &CommonAppConfig{
+			Backup: &T,
+		},
+		Backup: &BackupConfig{
+			DataRetentionMaxDays: &days,
+		},
 	}
 
-	d2 := data{
-		I: &vi2,
-		S: &vs,
+	d2 := Config{
+		Mail: &CommonAppConfig{
+			Backup: &F,
+		},
+		Site: &CommonAppConfig{
+			Backup: &F,
+		},
+		Backup: &BackupConfig{
+			DataRetentionMaxDays: &days2,
+		},
 	}
 
 	err := mergo.Merge(&d1, d2, mergo.WithOverride)
@@ -33,15 +59,5 @@ func TestIssueZyj(t *testing.T) {
 		t.Errorf("Error while merging %s", err)
 	}
 
-	if *d1.B != vb {
-		t.Error("vb failed")
-	}
-
-	if *d1.I != vi2 {
-		t.Error("vi failed")
-	}
-
-	if *d1.S != vs {
-		t.Error("vs failed")
-	}
+	fmt.Printf("result: drive: %t, mail: %t, site: %t, days: %d\n", *d1.Drive.Backup, *d1.Mail.Backup, *d1.Site.Backup, *d1.Backup.DataRetentionMaxDays)
 }

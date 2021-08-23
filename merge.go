@@ -248,6 +248,58 @@ func deepMerge(dst, src reflect.Value, visited map[uintptr]*visit, depth int, co
 					dst.Set(src)
 				}
 			} else if src.Kind() == reflect.Ptr {
+				if !src.IsNil() && dst.Kind() == reflect.Ptr && src.Elem().Kind() == dst.Elem().Kind() {
+					switch src.Elem().Kind() {
+					case reflect.Bool:
+						b := src.Elem().Bool()
+						dst.Set(reflect.ValueOf(&b))
+						return
+					case reflect.String:
+						s := src.Elem().String()
+						dst.Set(reflect.ValueOf(&s))
+						return
+					case reflect.Int:
+						i := int(src.Elem().Int())
+						dst.Set(reflect.ValueOf(&i))
+						return
+					case reflect.Int8:
+						i := int8(src.Elem().Int())
+						dst.Set(reflect.ValueOf(&i))
+						return
+					case reflect.Int16:
+						i := int16(src.Elem().Int())
+						dst.Set(reflect.ValueOf(&i))
+						return
+					case reflect.Int32:
+						i := int32(src.Elem().Int())
+						dst.Set(reflect.ValueOf(&i))
+						return
+					case reflect.Int64:
+						i := src.Elem().Int()
+						dst.Set(reflect.ValueOf(&i))
+						return
+					case reflect.Uint:
+						i := uint(src.Elem().Uint())
+						dst.Set(reflect.ValueOf(&i))
+						return
+					case reflect.Uint8:
+						i := uint8(src.Elem().Uint())
+						dst.Set(reflect.ValueOf(&i))
+						return
+					case reflect.Uint16:
+						i := uint16(src.Elem().Uint())
+						dst.Set(reflect.ValueOf(&i))
+						return
+					case reflect.Uint32:
+						i := uint32(src.Elem().Uint())
+						dst.Set(reflect.ValueOf(&i))
+						return
+					case reflect.Uint64:
+						var i = src.Elem().Uint()
+						dst.Set(reflect.ValueOf(&i))
+						return
+					}
+				}
 				if err = deepMerge(dst.Elem(), src.Elem(), visited, depth+1, config); err != nil {
 					return
 				}
